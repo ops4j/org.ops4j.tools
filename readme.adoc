@@ -1,0 +1,16 @@
+= OPS4J Tools
+
+OPS4J Tools is a collection of utilities which are not classic OSGi bundles.
+These utilities are intended to help creating OSGi applications.
+
+== Building and running
+
+Here are some typical maven invocations
+
+.Generate licenese headers in source files
+
+    mvn -Plicense process-sources
+
+.Build project
+
+    mvn clean install
