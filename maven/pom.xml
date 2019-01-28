@@ -40,7 +40,17 @@
     <description>OPS4J Maven plugins</description>
 
     <modules>
-        <module>osgi-manifest-summary-maven-plugin</module>
+        <module>osgi-report-maven-plugin</module>
     </modules>
+
+    <profiles>
+        <profile>
+            <id>it-maven-projects</id>
+            <modules>
+                <module>osgi-report-maven-plugin/src/it/osgi-report-activator</module>
+                <module>osgi-report-maven-plugin/src/it/osgi-report-multi-simple</module>
+            </modules>
+        </profile>
+    </profiles>
 
 </project>
