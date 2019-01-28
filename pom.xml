@@ -393,10 +393,17 @@
                                 <include>src/main/java/**/*.java</include>
                                 <include>src/test/java/**/*.java</include>
                                 <include>**/*.xml</include>
+                                <include>**/*.bnd</include>
                                 <include>**/*.cfg</include>
                                 <include>**/*.properties</include>
                             </includes>
                             <excludes />
+                            <mapping>
+                                <bnd>SCRIPT_STYLE</bnd>
+                            </mapping>
+                            <headerDefinitions>
+                                <headerDefinition>license-headers.xml</headerDefinition>
+                            </headerDefinitions>
                         </configuration>
                         <executions>
                             <execution>
