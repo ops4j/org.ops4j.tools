@@ -9,8 +9,12 @@ Here are some typical maven invocations
 
 .Generate licenese headers in source files
 
-    mvn -Plicense process-sources
+    mvn -Plicense process-sources -Pit-maven-projects -Denforcer.skip
 
 .Build project
 
     mvn clean install
+
+.Perform checkstyle
+
+    mvn -Pcs validate -Pit-maven-projects -Denforcer.skip

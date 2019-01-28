@@ -84,8 +84,8 @@
         <!-- versions of Maven plugins -->
 
         <!-- Plugins from org.apache.maven.plugins -->
-        <!--<version.plugin.maven-checkstyle-plugin>3.0.0</version.plugin.maven-checkstyle-plugin>-->
-        <!--<version.com.puppycrawl.tools.checkstyle>8.9</version.com.puppycrawl.tools.checkstyle>-->
+        <version.plugin.maven-checkstyle-plugin>3.0.0</version.plugin.maven-checkstyle-plugin>
+        <version.com.puppycrawl.tools.checkstyle>8.17</version.com.puppycrawl.tools.checkstyle>
         <version.plugin.maven-clean-plugin>3.1.0</version.plugin.maven-clean-plugin>
         <version.plugin.maven-checkstyle-plugin>3.0.0</version.plugin.maven-checkstyle-plugin>
         <version.plugin.maven-compiler-plugin>3.8.0</version.plugin.maven-compiler-plugin>
@@ -330,51 +330,45 @@
     </build>
 
     <profiles>
-        <!--&lt;!&ndash; Checkstyle: `mvn -Pcs validate` &ndash;&gt;-->
-        <!--<profile>-->
-            <!--<id>cs</id>-->
-            <!--<build>-->
-                <!--<plugins>-->
-                    <!--<plugin>-->
-                        <!--<groupId>org.apache.maven.plugins</groupId>-->
-                        <!--<artifactId>maven-checkstyle-plugin</artifactId>-->
-                        <!--<executions>-->
-                            <!--<execution>-->
-                                <!--<id>verify-style</id>-->
-                                <!--<phase>validate</phase>-->
-                                <!--<goals>-->
-                                    <!--<goal>check</goal>-->
-                                <!--</goals>-->
-                                <!--<configuration>-->
-                                    <!--<configLocation>checkstyle/pax-jms-checks.xml</configLocation>-->
-                                    <!--<suppressionsLocation>checkstyle/pax-jms-checks-suppressions.xml</suppressionsLocation>-->
-                                    <!--<includes>org/ops4j/pax/jms/**/*.java</includes>-->
-                                    <!--<encoding>UTF-8</encoding>-->
-                                    <!--<consoleOutput>true</consoleOutput>-->
-                                    <!--<failsOnError>true</failsOnError>-->
-                                    <!--<failOnViolation>true</failOnViolation>-->
-                                    <!--<logViolationsToConsole>true</logViolationsToConsole>-->
-                                    <!--<includeTestSourceDirectory>true</includeTestSourceDirectory>-->
-                                    <!--<violationSeverity>warning</violationSeverity>-->
-                                <!--</configuration>-->
-                            <!--</execution>-->
-                        <!--</executions>-->
-                        <!--<dependencies>-->
-                            <!--<dependency>-->
-                                <!--<groupId>com.puppycrawl.tools</groupId>-->
-                                <!--<artifactId>checkstyle</artifactId>-->
-                                <!--<version>${version.com.puppycrawl.tools.checkstyle}</version>-->
-                            <!--</dependency>-->
-                            <!--<dependency>-->
-                                <!--<groupId>org.ops4j.pax.jms</groupId>-->
-                                <!--<artifactId>pax-jms-checkstyle-rules</artifactId>-->
-                                <!--<version>${project.version}</version>-->
-                            <!--</dependency>-->
-                        <!--</dependencies>-->
-                    <!--</plugin>-->
-                <!--</plugins>-->
-            <!--</build>-->
-        <!--</profile>-->
+        <!-- Checkstyle: `mvn -Pcs validate` -->
+        <profile>
+            <id>cs</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-checkstyle-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>verify-style</id>
+                                <phase>validate</phase>
+                                <goals>
+                                    <goal>check</goal>
+                                </goals>
+                                <configuration>
+                                    <configLocation>ops4j-tools-checks.xml</configLocation>
+                                    <includes>org/ops4j/tools/**/*.java</includes>
+                                    <encoding>UTF-8</encoding>
+                                    <consoleOutput>true</consoleOutput>
+                                    <failsOnError>true</failsOnError>
+                                    <failOnViolation>true</failOnViolation>
+                                    <logViolationsToConsole>true</logViolationsToConsole>
+                                    <includeTestSourceDirectory>true</includeTestSourceDirectory>
+                                    <violationSeverity>warning</violationSeverity>
+                                </configuration>
+                            </execution>
+                        </executions>
+                        <dependencies>
+                            <dependency>
+                                <groupId>com.puppycrawl.tools</groupId>
+                                <artifactId>checkstyle</artifactId>
+                                <version>${version.com.puppycrawl.tools.checkstyle}</version>
+                            </dependency>
+                        </dependencies>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
 
         <!-- License generation: `mvn -Plicense process-sources` -->
         <profile>
