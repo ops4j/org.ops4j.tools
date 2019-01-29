@@ -25,11 +25,11 @@
 
     <parent>
         <groupId>org.ops4j.tools.maven.it</groupId>
-        <artifactId>osgi-report-multi-simple</artifactId>
+        <artifactId>osgi-report-multi-pnested</artifactId>
         <version>0.1.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>osgi-report-multi-p3</artifactId>
+    <artifactId>osgi-report-multi-pnested-p2</artifactId>
     <packaging>jar</packaging>
 
     <properties>
@@ -59,17 +59,39 @@
             </plugin>
             <plugin>
                 <!--
-                    Using bnd-maven-plugin directly
-                    https://github.com/bndtools/bnd/blob/master/maven/bnd-maven-plugin/README.md
+                    This is the way Apache Camel is using maven-bundle-plugin.
+                    No extensions, just "manifest" goal in "prepare-package" phase instead of default "process-classes"
                 -->
-                <groupId>biz.aQute.bnd</groupId>
-                <artifactId>bnd-maven-plugin</artifactId>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-bundle-plugin</artifactId>
                 <version>4.1.0</version>
+                <extensions>false</extensions>
+                <configuration>
+                    <!-- org.apache.maven.archiver.MavenArchiveConfiguration -->
+                    <archive>
+                        <!-- org.apache.maven.archiver.ManifestConfiguration -->
+                        <manifest>
+                            <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+                            <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
+                        </manifest>
+                        <manifestEntries>
+                            <X-Built-For>org.ops4j.tools.maven</X-Built-For>
+                        </manifestEntries>
+                    </archive>
+                </configuration>
                 <executions>
                     <execution>
+                        <id>generate-manifest</id>
                         <goals>
-                            <goal>bnd-process</goal>
+                            <goal>manifest</goal>
                         </goals>
+                        <configuration>
+                            <instructions>
+                                <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
+                                <Bundle-Activator>org.ops4j.tools.maven.it.activator.Activator</Bundle-Activator>
+                                <Import-Package>*</Import-Package>
+                            </instructions>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>

@@ -23,56 +23,38 @@
 
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>org.ops4j.tools.maven.it</groupId>
-    <artifactId>osgi-report-activator</artifactId>
-    <version>0.1.0-SNAPSHOT</version>
-    <packaging>bundle</packaging>
+    <parent>
+        <groupId>org.ops4j.tools.maven.it</groupId>
+        <artifactId>osgi-report-multi-simple</artifactId>
+        <version>0.1.0-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>osgi-report-multi-report</artifactId>
+    <packaging>pom</packaging>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     </properties>
 
-    <dependencies>
-        <dependency>
-            <groupId>org.osgi</groupId>
-            <artifactId>osgi.core</artifactId>
-            <version>6.0.0</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.maven</groupId>
-            <artifactId>maven-embedder</artifactId>
-            <version>3.6.0</version>
-        </dependency>
-    </dependencies>
-
     <build>
         <plugins>
-            <plugin>
-                <groupId>org.apache.felix</groupId>
-                <artifactId>maven-bundle-plugin</artifactId>
-                <version>4.1.0</version>
-                <extensions>true</extensions>
-                <configuration>
-                    <instructions>
-                        <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
-                        <Bundle-Activator>org.ops4j.tools.maven.it.activator.Activator</Bundle-Activator>
-                        <Import-Package>*</Import-Package>
-                    </instructions>
-                </configuration>
-            </plugin>
             <plugin>
                 <groupId>org.ops4j.tools.maven</groupId>
                 <artifactId>osgi-report-maven-plugin</artifactId>
                 <version>0.1.0-SNAPSHOT</version>
+                <extensions>true</extensions>
                 <executions>
                     <execution>
                         <id>default-manifest-summary</id>
-                        <phase>verify</phase>
+                        <phase>prepare-package</phase>
                         <goals>
                             <goal>manifest-summary</goal>
                         </goals>
+                        <configuration>
+                            <report>${project.build.directory}/manifest-summary.txt</report>
+                            <attach>true</attach>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>

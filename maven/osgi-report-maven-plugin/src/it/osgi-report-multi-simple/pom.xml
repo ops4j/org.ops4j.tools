@@ -35,28 +35,88 @@
 
     <modules>
         <module>p1</module>
-        <module>p2</module>
-        <module>p3</module>
         <module>p4</module>
+        <module>pnested</module>
     </modules>
 
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.ops4j.tools.maven</groupId>
-                <artifactId>osgi-report-maven-plugin</artifactId>
-                <version>0.1.0-SNAPSHOT</version>
-                <executions>
-                    <execution>
-                        <id>default-manifest-summary</id>
-                        <phase>prepare-package</phase>
-                        <goals>
-                            <goal>manifest-summary</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-        </plugins>
-    </build>
+    <!--
+        `mvn clean install`:
+          - osgi-report-multi-simple
+          - osgi-report-multi-p1
+          - osgi-report-multi-p4
+          - osgi-report-multi-pnested-p1
+          - osgi-report-multi-pnested
+          - osgi-report-multi-p3
+
+        `mvn clean install -Poptional-project-p2`:
+          - osgi-report-multi-simple
+          - osgi-report-multi-p1
+          - osgi-report-multi-p4
+          - osgi-report-multi-pnested-p1
+          - osgi-report-multi-pnested-p2
+          - osgi-report-multi-pnested
+          - osgi-report-multi-p2
+
+        `mvn clean install -Preport`:
+          - osgi-report-multi-simple
+          - osgi-report-multi-p1
+          - osgi-report-multi-p4
+          - osgi-report-multi-pnested-p1
+          - osgi-report-multi-pnested
+          - osgi-report-multi-report
+
+        `mcsji -Poptional-report,optional-project-p3,optional-project-p2`:
+          - osgi-report-multi-simple
+          - osgi-report-multi-p1
+          - osgi-report-multi-p4
+          - osgi-report-multi-pnested-p1
+          - osgi-report-multi-pnested-p2
+          - osgi-report-multi-pnested
+          - osgi-report-multi-p2
+          - osgi-report-multi-report
+          - osgi-report-multi-p3
+
+        `mvn package org.ops4j.tools.maven:osgi-report-maven-plugin:0.1.0-SNAPSHOT:manifest-summary -Poptional-project-p2 -f pnested/`
+        (extensions are not loaded from the plugin):
+          - osgi-report-multi-pnested
+          - osgi-report-multi-pnested-p1
+          - osgi-report-multi-pnested-p2
+          - and additionally (note "4/3"):
+            [INFO] - - - - -< org.ops4j.tools.maven.it:osgi-report-multi-pnested >- - - - -
+            [INFO] Building osgi-report-multi-pnested 0.1.0-SNAPSHOT                  [4/3]
+            [INFO] - - - - - - - - - - - - - - - - [ pom ] - - - - - - - - - - - - - - - -
+            [INFO]
+            [INFO] - - osgi-report-maven-plugin:0.1.0-SNAPSHOT:manifest-summary (default-cli) @ osgi-report-multi-pnested - -
+            [INFO] Processing org.ops4j.tools.maven.it:osgi-report-multi-pnested-p1:bundle:0.1.0-SNAPSHOT
+            [INFO] Processing org.ops4j.tools.maven.it:osgi-report-multi-pnested-p2:jar:0.1.0-SNAPSHOT
+            [INFO] - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+        `mvn package org.ops4j.tools.maven:osgi-report-maven-plugin:0.1.0-SNAPSHOT:manifest-summary -Poptional-project-p2 -f pnested/p1`:
+        Just single project built, with report generated inside target/.
+    -->
+
+    <profiles>
+        <profile>
+            <id>optional-project-p2</id>
+            <modules>
+                <module>p2</module>
+            </modules>
+        </profile>
+        <profile>
+            <id>optional-report</id>
+            <modules>
+                <module>report</module>
+            </modules>
+        </profile>
+        <profile>
+            <id>optional-project-p3</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <modules>
+                <module>p3</module>
+            </modules>
+        </profile>
+    </profiles>
 
 </project>

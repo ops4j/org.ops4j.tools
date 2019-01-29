@@ -41,6 +41,13 @@
 
     <dependencies>
 
+        <!-- Felix -->
+
+        <dependency>
+            <groupId>org.apache.felix</groupId>
+            <artifactId>org.apache.felix.utils</artifactId>
+        </dependency>
+
         <!-- Maven -->
 
         <dependency>

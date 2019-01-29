@@ -23,33 +23,25 @@
 
     <modelVersion>4.0.0</modelVersion>
 
-    <parent>
-        <groupId>org.ops4j</groupId>
-        <artifactId>tools</artifactId>
-        <version>0.1.0-SNAPSHOT</version>
-        <relativePath>../pom.xml</relativePath>
-    </parent>
-
-    <groupId>org.ops4j.tools</groupId>
-    <artifactId>maven</artifactId>
+    <groupId>org.ops4j.tools.maven.it</groupId>
+    <artifactId>osgi-report-multi-pnested</artifactId>
     <version>0.1.0-SNAPSHOT</version>
     <packaging>pom</packaging>
 
-    <name>OPS4J Tools : Maven</name>
-
-    <description>OPS4J Maven plugins</description>
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+    </properties>
 
     <modules>
-        <module>osgi-report-maven-plugin</module>
+        <module>p1</module>
     </modules>
 
     <profiles>
         <profile>
-            <id>it-maven-projects</id>
+            <id>optional-project-p2</id>
             <modules>
-                <module>osgi-report-maven-plugin/src/it/osgi-report-activator</module>
-                <module>osgi-report-maven-plugin/src/it/osgi-report-pax-logging-log4j2</module>
-                <module>osgi-report-maven-plugin/src/it/osgi-report-multi-simple</module>
+                <module>p2</module>
             </modules>
         </profile>
     </profiles>
