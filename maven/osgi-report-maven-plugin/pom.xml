@@ -26,13 +26,13 @@
     <parent>
         <groupId>org.ops4j.tools</groupId>
         <artifactId>maven</artifactId>
-        <version>0.1.0-SNAPSHOT</version>
+        <version>0.1.0</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
     <groupId>org.ops4j.tools.maven</groupId>
     <artifactId>osgi-report-maven-plugin</artifactId>
-    <version>0.1.0-SNAPSHOT</version>
+    <version>0.1.0</version>
     <packaging>maven-plugin</packaging>
 
     <name>OPS4J Tools : Maven : OSGi Manifest Summary</name>
