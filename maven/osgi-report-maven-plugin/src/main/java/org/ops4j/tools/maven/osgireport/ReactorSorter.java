@@ -84,14 +84,14 @@ public class ReactorSorter extends AbstractMavenLifecycleParticipant {
                 dependency.setArtifactId(project.getArtifactId());
                 dependency.setVersion(project.getVersion());
                 switch (project.getPackaging()) {
-                    case "pom":
-                        dependency.setType("pom");
-                        break;
                     case "bundle":
                         dependency.setType("jar");
                         break;
-                    default:
+                    case "pom":
+                    case "war":
                         dependency.setType(project.getPackaging());
+                    default:
+                        break;
                 }
                 logger.debug(" - " + dependency);
                 reportProject.getDependencies().add(dependency);
