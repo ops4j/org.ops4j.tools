@@ -47,7 +47,6 @@
                 <executions>
                     <execution>
                         <id>default-manifest-summary</id>
-                        <phase>prepare-package</phase>
                         <goals>
                             <goal>manifest-summary</goal>
                         </goals>
