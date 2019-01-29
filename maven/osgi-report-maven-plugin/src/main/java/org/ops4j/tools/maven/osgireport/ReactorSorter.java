@@ -93,6 +93,7 @@ public class ReactorSorter extends AbstractMavenLifecycleParticipant {
                     default:
                         dependency.setType(project.getPackaging());
                 }
+                logger.debug(" - " + dependency);
                 reportProject.getDependencies().add(dependency);
             }
         }
