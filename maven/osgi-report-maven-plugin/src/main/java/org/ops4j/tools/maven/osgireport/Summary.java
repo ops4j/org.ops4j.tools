@@ -22,6 +22,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.StringWriter;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.LinkedList;
@@ -69,6 +70,9 @@ public class Summary extends AbstractMojo {
     @Parameter(defaultValue = "true")
     private boolean attach;
 
+    @Parameter
+    private String separateReports;
+
     @Component
     private Logger logger;
 
@@ -86,12 +90,32 @@ public class Summary extends AbstractMojo {
 
         report.getParentFile().mkdirs();
 
+        File individualReportsDirectory = null;
+        if (separateReports != null) {
+            individualReportsDirectory = new File(separateReports);
+            if (!individualReportsDirectory.exists()) {
+                individualReportsDirectory.mkdirs();
+            } else if (individualReportsDirectory.isFile()) {
+                logger.warn(individualReportsDirectory + " exists and is not a directory. Skipping.");
+                individualReportsDirectory = null;
+            }
+        }
+
         try (FileWriter fw = new FileWriter(report)) {
             for (Artifact artifact : allArtifacts) {
                 logger.info("Processing {}", artifact);
                 fw.write("= " + artifact.toString() + "\n");
                 process(artifact, fw);
                 fw.write("\n\n");
+
+                if (individualReportsDirectory != null) {
+                    File reportFile = new File(individualReportsDirectory, getReportFile(artifact));
+                    reportFile.getParentFile().mkdirs();
+                    try (FileWriter fwi = new FileWriter(reportFile)) {
+                        fwi.write("= " + artifact.toString() + "\n");
+                        process(artifact, fwi);
+                    }
+                }
             }
         } catch (IOException e) {
             throw new MojoExecutionException(e.getMessage(), e);
@@ -101,6 +125,32 @@ public class Summary extends AbstractMojo {
             logger.info("Attaching " + report);
             projectHelper.attachArtifact(session.getCurrentProject(), "txt", "manifest-summary", report);
         }
+    }
+
+    /**
+     * Returns a relative file path for given artifact's report.
+     * @param artifact
+     * @return
+     */
+    private String getReportFile(Artifact artifact) {
+        StringWriter name = new StringWriter();
+        name.append(artifact.getGroupId().replaceAll("\\.", "/"));
+        name.append("/");
+        name.append(artifact.getArtifactId());
+        name.append("/");
+        name.append(artifact.getVersion());
+        name.append("/");
+        name.append(artifact.getArtifactId());
+        name.append("-");
+        name.append(artifact.getVersion());
+        if (artifact.getClassifier() != null) {
+            name.append("-").append(artifact.getClassifier());
+        }
+        name.append(".");
+        name.append(artifact.getType() == null || artifact.getType().equals("") ? "jar" : artifact.getType());
+        name.append(".txt");
+
+        return name.toString();
     }
 
     /**

@@ -53,6 +53,7 @@
                         <configuration>
                             <report>${project.build.directory}/manifest-summary.txt</report>
                             <attach>true</attach>
+                            <separateReports>${project.build.directory}/reports</separateReports>
                         </configuration>
                     </execution>
                 </executions>
