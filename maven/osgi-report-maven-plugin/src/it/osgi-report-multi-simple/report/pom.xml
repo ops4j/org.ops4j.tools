@@ -26,7 +26,7 @@
     <parent>
         <groupId>org.ops4j.tools.maven.it</groupId>
         <artifactId>osgi-report-multi-simple</artifactId>
-        <version>0.1.0-SNAPSHOT</version>
+        <version>0.1.1-SNAPSHOT</version>
     </parent>
 
     <artifactId>osgi-report-multi-report</artifactId>
@@ -42,7 +42,7 @@
             <plugin>
                 <groupId>org.ops4j.tools.maven</groupId>
                 <artifactId>osgi-report-maven-plugin</artifactId>
-                <version>0.1.0-SNAPSHOT</version>
+                <version>0.1.1-SNAPSHOT</version>
                 <extensions>true</extensions>
                 <executions>
                     <execution>
