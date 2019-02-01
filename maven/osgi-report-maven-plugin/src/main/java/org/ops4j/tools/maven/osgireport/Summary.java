@@ -241,19 +241,27 @@ public class Summary extends AbstractMojo {
 
         @Override
         public int compare(Artifact a1, Artifact a2) {
-            String s1 = artifactKey(a1);
-            String s2 = artifactKey(a2);
-            return s1.compareTo(s2);
+            String[] s1 = artifactKey(a1);
+            String[] s2 = artifactKey(a2);
+            for (int s = 0; s < s1.length; s++) {
+                int v = s1[s].compareTo(s2[s]);
+                if (v != 0) {
+                    return v;
+                }
+            }
+            return 0;
         }
 
-    }
+        private String[] artifactKey(Artifact artifact) {
+            return new String[] {
+                    artifact.getGroupId(),
+                    artifact.getArtifactId(),
+                    artifact.getVersion(),
+                    artifact.getType() == null || artifact.getType().equals("") ? "jar" : artifact.getType(),
+                    artifact.getClassifier() == null ? "" : artifact.getClassifier()
+            };
+        }
 
-    private String artifactKey(Artifact artifact) {
-        return String.format("%s:%s:%s:%s:%s",
-                artifact.getGroupId(), artifact.getArtifactId(),
-                artifact.getVersion(),
-                artifact.getType() == null || artifact.getType().equals("") ? "jar" : artifact.getType(),
-                artifact.getClassifier() == null ? "" : artifact.getClassifier());
     }
 
 }
