@@ -25,7 +25,7 @@
 
     <groupId>org.ops4j.tools.maven.it</groupId>
     <artifactId>osgi-report-activator</artifactId>
-    <version>0.1.1-SNAPSHOT</version>
+    <version>0.1.2-SNAPSHOT</version>
     <packaging>bundle</packaging>
 
     <properties>
@@ -65,7 +65,7 @@
             <plugin>
                 <groupId>org.ops4j.tools.maven</groupId>
                 <artifactId>osgi-report-maven-plugin</artifactId>
-                <version>0.1.1-SNAPSHOT</version>
+                <version>0.1.2-SNAPSHOT</version>
                 <executions>
                     <execution>
                         <id>default-manifest-summary</id>
