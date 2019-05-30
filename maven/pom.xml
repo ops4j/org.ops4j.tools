@@ -26,13 +26,13 @@
     <parent>
         <groupId>org.ops4j</groupId>
         <artifactId>tools</artifactId>
-        <version>0.1.1</version>
+        <version>0.1.2-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
     <groupId>org.ops4j.tools</groupId>
     <artifactId>maven</artifactId>
-    <version>0.1.1</version>
+    <version>0.1.2-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <name>OPS4J Tools : Maven</name>
