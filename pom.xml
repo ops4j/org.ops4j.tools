@@ -85,7 +85,7 @@
 
         <!-- Plugins from org.apache.maven.plugins -->
         <version.plugin.maven-checkstyle-plugin>3.0.0</version.plugin.maven-checkstyle-plugin>
-        <version.com.puppycrawl.tools.checkstyle>8.17</version.com.puppycrawl.tools.checkstyle>
+        <version.com.puppycrawl.tools.checkstyle>8.29</version.com.puppycrawl.tools.checkstyle>
         <version.plugin.maven-clean-plugin>3.1.0</version.plugin.maven-clean-plugin>
         <version.plugin.maven-checkstyle-plugin>3.0.0</version.plugin.maven-checkstyle-plugin>
         <version.plugin.maven-compiler-plugin>3.8.0</version.plugin.maven-compiler-plugin>
