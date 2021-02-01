@@ -1,0 +1,9 @@
+= Jira export
+
+Please put an XML file here and reference it in `org.ops4j.tools.jira2github.client.Client.main()`.
+
+The file should be an XML export from Issues page of Jira project.
+I've prepared a JAXB model for XML having a root element like this:
+----
+<rss version="0.92">
+----
