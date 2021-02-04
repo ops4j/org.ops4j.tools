@@ -24,4 +24,12 @@ public class Rss {
     @XmlElement(name = "channel")
     public Channel channel;
 
+    public void sort() {
+        channel.items.sort((i1, i2) -> {
+            int k1 = Integer.parseInt(i1.key.value.substring(i1.key.value.indexOf('-') + 1));
+            int k2 = Integer.parseInt(i2.key.value.substring(i2.key.value.indexOf('-') + 1));
+            return k1 - k2;
+        });
+    }
+
 }

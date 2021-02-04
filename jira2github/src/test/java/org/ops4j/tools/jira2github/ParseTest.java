@@ -32,8 +32,9 @@ public class ParseTest {
         JAXBContext jaxb = JAXBContext.newInstance(Rss.class.getPackage().getName());
         Unmarshaller u = jaxb.createUnmarshaller();
 
-        try (FileReader reader = new FileReader("data/pax-transx-20210129.xml")) {
+        try (FileReader reader = new FileReader("data/ops4j-tools-20210204.xml")) {
             Rss rss = u.unmarshal(new StreamSource(reader), Rss.class).getValue();
+            rss.sort();
             System.out.println(rss.channel.items.size());
 
             for (Item item : rss.channel.items) {

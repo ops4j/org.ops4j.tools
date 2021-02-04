@@ -7,3 +7,31 @@ I've prepared a JAXB model for XML having a root element like this:
 ----
 <rss version="0.92">
 ----
+
+Replacements:
+----
+&quotquot; -> &quot;
+&qquot; -> &quot;
+&ququot; -> &quot;
+&quoquot; -> &quot;
+&gtgt; -> &gt;
+&aapos; -> &apos;
+&llt; -> &lt;
+&lt;lt; -> &lt;
+----
+
+== What has to be migrated
+
+See https://spring.io/blog/2019/01/15/spring-framework-s-migration-from-jira-to-github-issues for inspiration
+
+* Jira links are tough, as they require 2 passes for the migration
+* subtasks need a link in bottom-section of the issue
+* attachments are already handled, but point to Jira
+* Spring converts some Jira fields to GH labels:
+** issue type -> `type: *`
+** status -> `status: *`
+** resolution -> `status: *`
+** component -> `in: *`
+* markup - unquoted code blocks (like XML) should be quoted
+* `@` mentions should be quoted
+* finally, it'd be great to add "last comments" to Jira issues, pointing back to Github

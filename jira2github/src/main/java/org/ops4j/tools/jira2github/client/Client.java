@@ -19,9 +19,11 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 import javax.net.ssl.SSLContext;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Unmarshaller;
@@ -61,7 +63,9 @@ public class Client {
 
     public static final Logger LOG = LoggerFactory.getLogger(Client.class);
 
-    private static Properties users = new Properties();
+    private static final Properties users = new Properties();
+    private static final Map<String, String> newUsers = new LinkedHashMap<>();
+    private static final Set<String> unknownUsers = new HashSet<>();
 
     public static void main(String[] args) throws Exception {
         LOG.info("Starting");
@@ -112,8 +116,9 @@ public class Client {
         Unmarshaller u = jaxb.createUnmarshaller();
 
         try (CloseableHttpClient client = clientBuilder.build()) {
-            try (FileReader reader = new FileReader("data/pax-transx-20210129.xml")) {
+            try (FileReader reader = new FileReader("data/pax-logging-20210204.xml")) {
                 Rss rss = u.unmarshal(new StreamSource(reader), Rss.class).getValue();
+                rss.sort();
 
                 for (Item item : rss.channel.items) {
                     send(item, client, org, repo, token);
@@ -184,7 +189,16 @@ public class Client {
         pb.setEntity(entity.toString().getBytes(StandardCharsets.UTF_8), ContentType.APPLICATION_JSON);
         System.out.println(entity);
 
-        createIssue(client, pb);
+        for (String user : unknownUsers) {
+            if (!newUsers.containsKey(user)) {
+                System.out.println(" - " + user);
+            }
+        }
+        newUsers.forEach((id, user) -> {
+            System.out.printf("%s = %s%n", id, user);
+        });
+
+//        createIssue(client, pb);
     }
 
     private static void createIssue(CloseableHttpClient client, ClassicRequestBuilder pb) throws Exception {
@@ -214,13 +228,21 @@ public class Client {
 
     private static String body(Item issue) {
         StringBuilder sb = new StringBuilder();
+        String user = user(issue.reporter.accountid);
+        if (user == null && issue.reporter.value != null) {
+            newUsers.put(issue.reporter.accountid, issue.reporter.value);
+        }
         sb.append(String.format("**[%s](%s)** created **[%s](%s)** %n%n",
-                users.get(issue.reporter.accountid), "https://ops4j1.jira.com/secure/ViewProfile.jspa?accountId=" + issue.reporter.accountid,
+                user, "https://ops4j1.jira.com/secure/ViewProfile.jspa?accountId=" + issue.reporter.accountid,
                 issue.key.value, "https://ops4j1.jira.com/browse/" + issue.key.value
         ));
-        sb.append(HtmlToMd.markdown(issue.htmlDescription));
+        String desc = HtmlToMd.markdown(issue.htmlDescription);
+        if (!desc.trim().equals("")) {
+            sb.append(desc);
+            sb.append("\n\n");
+        }
 
-        sb.append("\n\n---\n\n");
+        sb.append("---\n\n");
 
         if (issue.version.size() > 0) {
             sb.append(String.format("**Affects:** %s%n", String.join(", ", issue.version)));
@@ -246,11 +268,20 @@ public class Client {
 
     private static String body(Item.Comment comment) {
         StringBuilder sb = new StringBuilder();
+        String user = user(comment.author);
         sb.append(String.format("**[%s](%s)** commented%n%n",
-                users.get(comment.author), "https://ops4j1.jira.com/secure/ViewProfile.jspa?accountId=" + comment.author
+                user, "https://ops4j1.jira.com/secure/ViewProfile.jspa?accountId=" + comment.author
         ));
         sb.append(HtmlToMd.markdown(comment.html));
         return sb.toString();
+    }
+
+    private static String user(String author) {
+        String user = users.getProperty(author);
+        if (user == null) {
+            unknownUsers.add(author);
+        }
+        return user;
     }
 
     private static void logResponse(CloseableHttpResponse response, ResultWrapper resultWrapper, ClassicHttpRequest request) throws Exception {

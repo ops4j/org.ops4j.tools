@@ -167,7 +167,7 @@ public class Item {
         @XmlAttribute
         public String accountid;
         @XmlValue
-        public String colorName;
+        public String value;
     }
 
     @XmlType
