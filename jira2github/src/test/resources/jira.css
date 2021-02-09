@@ -1,0 +1,38 @@
+/*
+ * Copyright 2021 OPS4J.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
+
+
+body { background-color: #EEE; padding: 0; margin: 0 }
+div { padding: 0; margin: 0; border: 1px solid red }
+p { margin: 0.5em 0 }
+h1 { margin: 0; padding: 0.5em 1em }
+div.j2g-issue { margin: 10px 10px 20px 10px; border: 1px solid #CCC; padding: 0; background-color: white }
+div.j2g-issue-info { margin: 0; ; border-width: 0; border-bottom: 1px solid #CCC; padding: 0.2em; background-color: #DDD }
+div.j2g-issue-content { border-width: 0; padding: 10px }
+
+div.j2g-comment { margin: 2px 0 2px 0; border: 1px solid #DDD; padding: 0 }
+div.j2g-comment-info { margin: 0; border-width: 0; border-bottom: 1px solid #DDD; padding: 0.2em; background-color: #EEE }
+div.j2g-comment-content { border-width: 0; padding: 4px }
+
+div.j2g-link { border-width: 0; color: #AAA; margin: 0; padding: 0 3em }
+
+blockquote { border-left: 3px solid blue; padding-left: 10px; margin-left: 5px }
+pre { background-color: #EEC; border: 1px dashed #DDD; padding: 5px; white-space: pre; overflow-x: scroll }
+code { color: #882 }
+
+table { table-layout: fixed; width: 100% }
+td { width: 50px }

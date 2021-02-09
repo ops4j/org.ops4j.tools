@@ -11,13 +11,14 @@ I've prepared a JAXB model for XML having a root element like this:
 Replacements:
 ----
 &quotquot; -> &quot;
-&qquot; -> &quot;
+&quot; -> &quot;
 &ququot; -> &quot;
 &quoquot; -> &quot;
 &gtgt; -> &gt;
 &aapos; -> &apos;
 &llt; -> &lt;
 &lt;lt; -> &lt;
+�� -> :wink:
 ----
 
 == What has to be migrated
@@ -32,6 +33,27 @@ See https://spring.io/blog/2019/01/15/spring-framework-s-migration-from-jira-to-
 ** status -> `status: *`
 ** resolution -> `status: *`
 ** component -> `in: *`
-* markup - unquoted code blocks (like XML) should be quoted
+* markup - unquoted code blocks (like XML) should be quoted, to at least display XML markup - no need to wrap inside 3xbacktics.
 * `@` mentions should be quoted
 * finally, it'd be great to add "last comments" to Jira issues, pointing back to Github
+
+== Tool usage
+
+First we need an exported XML with all Jira issues - I get it using Jira UI, by going to e.g., https://ops4j1.jira.com/issues/?jql=project+%3D+PAXLOGGING+ORDER+BY+status+DESC%2C+priority+DESC&mode=hide and clicking Export -> Export XML.
+
+Before any issue may be imported to Github, target Github project needs some configuration.
+
+Relevant `versions.properties`, `types.properties`, `components.properties`, `resolutions.properties`, `links.properties` and `users.properties` may be created using tests from `org.ops4j.tools.jira2github.ParseTest`
+
+* Github labels that represent Jira statuses, resolutions, issue types and components - this is done using `org.ops4j.tools.jira2github.client.GithubLabelCreator`
+* Github milestones that represent Jira versions.
+** `org.ops4j.tools.jira2github.client.JiraVersionExporter` copies the versions from Jira to Github
+** `org.ops4j.tools.jira2github.client.GithubMilestoneExporter` then prints a property-file formatted mapping of Jira versions to Github milestone numbers - this mapping has to be added to `etc/versions.properties`
+
+Finally Jira issues may be copied to Github using `org.ops4j.tools.jira2github.client.GithubIssueImporter` - this is the most important part.
+
+`org.ops4j.tools.jira2github.client.GithubIssueExporter` gets back the Github issues and prints property-file formatted mapping of Jira issue keys to Github issue ids, which has to be added to `etc/issues.properties`.
+
+`org.ops4j.tools.jira2github.client.JiraCommentCreator` uses `etc/issues.properties` to add _last comments_ to relevant Jira issues.
+
+And really finally, `org.ops4j.tools.jira2github.client.GithubIssueLinker` is using the Jira-exported XML file again, together with `etc/issues.properties` to update body of Github issues and set issue references.

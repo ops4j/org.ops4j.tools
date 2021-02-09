@@ -45,6 +45,8 @@ public class Item {
     @XmlElement
     public Key key;
     @XmlElement
+    public Key parent;
+    @XmlElement
     public String summary;
     @XmlElement
     public Type type;
@@ -64,6 +66,10 @@ public class Item {
     @XmlElement(name = "label")
     public List<String> labels = new LinkedList<>();
 
+    @XmlElementWrapper(name = "issuelinks")
+    @XmlElement(name = "issuelinktype")
+    public List<IssuelinkType> issuelinkTypes = new LinkedList<>();
+
     @XmlElement
     @XmlJavaTypeAdapter(DateAdapter.class)
     public Date created;
@@ -74,10 +80,12 @@ public class Item {
     @XmlJavaTypeAdapter(DateAdapter.class)
     public Date resolved;
 
-    @XmlElement
-    public List<String> fixVersion = new LinkedList<>();
-    @XmlElement
-    public List<String> version = new LinkedList<>();
+    @XmlElement(name = "fixVersion")
+    public List<String> fixVersions = new LinkedList<>();
+    @XmlElement(name = "version")
+    public List<String> versions = new LinkedList<>();
+    @XmlElement(name = "component")
+    public List<String> components = new LinkedList<>();
 
     @XmlElement
     public String due;
@@ -158,8 +166,8 @@ public class Item {
     public static class Resolution {
         @XmlAttribute
         public int id;
-        @XmlAttribute
-        public String colorName;
+        @XmlValue
+        public String value;
     }
 
     @XmlType
@@ -196,6 +204,32 @@ public class Item {
         @XmlAttribute
         @XmlJavaTypeAdapter(DateAdapter.class)
         public Date created;
+    }
+
+    @XmlType
+    public static class IssuelinkType {
+        @XmlAttribute
+        public int id;
+        @XmlElement
+        public String name;
+        @XmlElement(name = "inwardlinks")
+        public Links inwardlinks;
+        @XmlElement(name = "outwardlinks")
+        public Links outwardlinks;
+    }
+
+    @XmlType
+    public static class Links {
+        @XmlAttribute
+        public String description;
+        @XmlElement(name = "issuelink")
+        public List<LinkKey> links;
+    }
+
+    @XmlType
+    public static class LinkKey {
+        @XmlElement(name = "issuekey")
+        public Key issueKey;
     }
 
 }

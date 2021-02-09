@@ -16,57 +16,44 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.ops4j.tools.jira2github;
+package org.ops4j.tools.jira2github.client;
 
 import java.io.FileReader;
-import java.io.IOException;
-import java.util.List;
 import java.util.Properties;
 
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
-import org.kohsuke.github.GHIssue;
 import org.kohsuke.github.GHIssueState;
+import org.kohsuke.github.GHMilestone;
 import org.kohsuke.github.GHRepository;
 import org.kohsuke.github.GitHub;
 import org.kohsuke.github.GitHubBuilder;
+import org.kohsuke.github.PagedIterable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-public class ConnectTest {
+/**
+ * After Jira versions were copied to Github milestones, we need numbers of the milestones, so issues can
+ * be properly assigned to the milestones.
+ */
+public class GithubMilestoneExporter {
 
-    private static Properties props;
+    public static final Logger LOG = LoggerFactory.getLogger(GithubMilestoneExporter.class);
 
-    @BeforeAll
-    public static void init() throws Exception {
-        props = new Properties();
+    public static void main(String[] args) throws Exception {
+        Properties props = new Properties();
         try (FileReader fr = new FileReader("etc/application.properties")) {
             props.load(fr);
         }
-    }
 
-    @Test
-    public void connect() throws Exception {
         GitHub github = new GitHubBuilder().withOAuthToken(props.getProperty("github.token"), props.getProperty("github.organization")).build();
         System.out.println(github.getMyself().getEmail());
 
-        GHRepository repo = github.getRepository("ops4j/org.ops4j.pax.logging");
-        repo.createIssue("Automatic issue 1").body("<b>asd</b>").create();
-    }
+        String project = props.getProperty("jira.project");
+        GHRepository repo = github.getRepository(props.getProperty("github.organization") + "/" + props.getProperty("github.repository"));
 
-    @Test
-    public void issues() throws Exception {
-        GitHub github = new GitHubBuilder().withOAuthToken(props.getProperty("github.token"), props.getProperty("github.organization")).build();
-        GHRepository repo = github.getRepository(props.getProperty("github.organization") + "/test2github");
-
-        List<GHIssue> issues = repo.getIssues(GHIssueState.ALL);
-        issues.forEach(i -> {
-            System.out.println(i.getId() + " : " + i.getBody());
-            try {
-                i.comment("comment 1 for " + i.getId());
-                i.comment("comment 2 for " + i.getId());
-            } catch (IOException e) {
-                throw new RuntimeException();
-            }
-        });
+        PagedIterable<GHMilestone> ms = repo.listMilestones(GHIssueState.ALL);
+        for (GHMilestone m : ms) {
+            System.out.printf("%s.%s = %d%n", project, m.getTitle(), m.getNumber());
+        }
     }
 
 }

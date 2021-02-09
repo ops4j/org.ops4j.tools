@@ -27,9 +27,11 @@ public class DateAdapter extends XmlAdapter<String, Date> {
     // Mon, 16 Apr 2018 16:18:16 +0200
     public static final DateFormat JIRA_FORMAT = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss Z");
     public static final DateFormat GH_FORMAT = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+    public static final DateFormat YMD_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
 
     static {
         GH_FORMAT.setTimeZone(TimeZone.getTimeZone(ZoneId.of("UTC")));
+        YMD_FORMAT.setTimeZone(TimeZone.getTimeZone(ZoneId.of("UTC")));
     }
 
     @Override
