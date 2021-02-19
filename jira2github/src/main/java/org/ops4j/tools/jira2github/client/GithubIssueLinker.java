@@ -20,11 +20,15 @@ package org.ops4j.tools.jira2github.client;
 
 import java.io.FileReader;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 import java.util.TreeMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.Unmarshaller;
+import javax.xml.transform.stream.StreamSource;
 
 import org.kohsuke.github.GHIssue;
 import org.kohsuke.github.GHIssueState;
@@ -32,6 +36,9 @@ import org.kohsuke.github.GHRepository;
 import org.kohsuke.github.GitHub;
 import org.kohsuke.github.GitHubBuilder;
 import org.kohsuke.github.PagedIterable;
+import org.ops4j.tools.jira2github.model.Item;
+import org.ops4j.tools.jira2github.model.Rss;
+import org.ops4j.tools.jira2github.support.HtmlToMd;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -51,10 +58,24 @@ public class GithubIssueLinker {
         try (FileReader fr = new FileReader("etc/application.properties")) {
             props.load(fr);
         }
+        Properties jiraIssues = new Properties();
+        try (FileReader fr = new FileReader("etc/issues.properties")) {
+            jiraIssues.load(fr);
+        }
+        Properties links = new Properties();
+        try (FileReader fr = new FileReader("etc/links.properties")) {
+            links.load(fr);
+        }
+        Properties projects = new Properties();
+        try (FileReader fr = new FileReader("etc/projects.properties")) {
+            projects.load(fr);
+        }
 
         GitHub github = new GitHubBuilder().withOAuthToken(props.getProperty("github.token"), props.getProperty("github.organization")).build();
 
         String project = props.getProperty("jira.project");
+        String exportDate = props.getProperty("jira.export.date");
+
         GHRepository repo = github.getRepository(props.getProperty("github.organization") + "/" + props.getProperty("github.repository"));
 
         Pattern title = Pattern.compile("^.*\\[(" + project + "-[0-9]+)]");
@@ -62,20 +83,43 @@ public class GithubIssueLinker {
         PagedIterable<GHIssue> issues = repo.listIssues(GHIssueState.ALL);
         Map<String, Integer> jira2gh = new TreeMap<>(new JiraKeyComparator());
 
+        JAXBContext jaxb = JAXBContext.newInstance(Rss.class.getPackage().getName());
+        Unmarshaller u = jaxb.createUnmarshaller();
+
+        Map<Integer, String> linksMarkdownSections = new HashMap<>();
+
+        try (FileReader reader = new FileReader("data/" + project + "-" + exportDate + ".xml")) {
+            Rss rss = u.unmarshal(new StreamSource(reader), Rss.class).getValue();
+            rss.sort();
+
+            for (Item item : rss.channel.items) {
+                if (!jiraIssues.containsKey(item.key.value)) {
+                    continue;
+                }
+                String linksMd = HtmlToMd.markdownForLinks(project, item, links, jiraIssues, projects);
+                if (linksMd != null) {
+                    linksMarkdownSections.put(Integer.parseInt(jiraIssues.getProperty(item.key.value)), linksMd);
+                }
+            }
+        }
+
+        if (linksMarkdownSections.isEmpty()) {
+            return;
+        }
+
         for (GHIssue i : issues) {
-            if (i.getPullRequest() == null) {
+            if (i.getPullRequest() == null && linksMarkdownSections.containsKey(i.getNumber())) {
                 // it's a normal issue
                 Matcher m = title.matcher(i.getTitle());
                 if (m.matches()) {
                     // it contains Jira reference in the summary
-                    String id = m.group(1);
-                    jira2gh.put(id, i.getNumber());
+                    LOG.info("Updating body of {}", i.getHtmlUrl());
+                    LOG.debug(linksMarkdownSections.get(i.getNumber()));
+                    i.setBody(i.getBody() + linksMarkdownSections.get(i.getNumber()));
+                    Thread.sleep(200);
                 }
             }
         }
-        jira2gh.forEach((key, nr) -> {
-            System.out.printf("%s = %d%n", key, nr);
-        });
     }
 
     public static class JiraKeyComparator implements Comparator<String> {

@@ -288,6 +288,11 @@ public class ParseTest {
     public void printMarkdownForReferences() throws Exception {
         JAXBContext jaxb = JAXBContext.newInstance(Rss.class.getPackage().getName());
         Unmarshaller u = jaxb.createUnmarshaller();
+
+        Properties props = new Properties();
+        try (FileReader fr = new FileReader("etc/application.properties")) {
+            props.load(fr);
+        }
         Properties links = new Properties();
         try (FileReader fr = new FileReader("etc/links.properties")) {
             links.load(fr);
@@ -296,30 +301,35 @@ public class ParseTest {
         try (FileReader fr = new FileReader("etc/issues.properties")) {
             issues.load(fr);
         }
-
-        Properties props = new Properties();
-        try (FileReader fr = new FileReader("etc/application.properties")) {
-            props.load(fr);
+        Properties projects = new Properties();
+        try (FileReader fr = new FileReader("etc/projects.properties")) {
+            projects.load(fr);
         }
-
-        String project = props.getProperty("jira.project");
-        String date = props.getProperty("jira.export.date");
 
         Set<String> hadLinks = new LinkedHashSet<>();
 
-        try (FileReader reader = new FileReader("data/" + project + "-" + date + ".xml");
-                FileWriter writer = new FileWriter("target/" + project + "-" + date + "-links.md")) {
-            Rss rss = u.unmarshal(new StreamSource(reader), Rss.class).getValue();
-            rss.sort();
+        File[] xmls = new File("data").listFiles((dir, name) -> name.endsWith(".xml"));
+        if (xmls == null) {
+            return;
+        }
 
-            Parser parser = Parser.builder().build();
+        for (File xml : xmls) {
+            String target = "target/" + xml.getName().replaceFirst("\\.xml$", "-links.md");
+            String project = xml.getName().substring(0, xml.getName().indexOf('-'));
+            try (FileReader reader = new FileReader(xml); FileWriter writer = new FileWriter(target)) {
+                Rss rss = u.unmarshal(new StreamSource(reader), Rss.class).getValue();
+                rss.sort();
 
-            for (Item item : rss.channel.items) {
-                String linksMd = HtmlToMd.markdownForLinks(project, item, links, issues);
-                if (linksMd != null) {
-                    writer.write(String.format("%n# %s: %s%n", item.key.value, item.summary));
-                    writer.write(linksMd);
-                    hadLinks.add(item.key.value);
+                Parser parser = Parser.builder().build();
+
+                for (Item item : rss.channel.items) {
+                    String linksMd = HtmlToMd.markdownForLinks(project, item, links, issues, projects);
+                    if (linksMd != null) {
+                        writer.write("\n\n\n##########################################################################");
+                        writer.write(String.format("%n# %s: %s%n", item.key.value, item.summary));
+                        writer.write(linksMd);
+                        hadLinks.add(item.key.value);
+                    }
                 }
             }
         }

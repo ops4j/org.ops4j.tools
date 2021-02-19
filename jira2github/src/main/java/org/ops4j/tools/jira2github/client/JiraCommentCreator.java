@@ -173,7 +173,11 @@ public class JiraCommentCreator {
         result.forEach((key, code) -> {
             if (code < 400) {
                 LOG.info("{}: HTTP {}", key, code);
-            } else {
+            }
+        });
+
+        result.forEach((key, code) -> {
+            if (code >= 400) {
                 LOG.warn("{}: HTTP {}", key, code);
             }
         });

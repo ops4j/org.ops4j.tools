@@ -145,12 +145,12 @@ public class HtmlToMd {
 //        return doc.outputSettings(new Document.OutputSettings().prettyPrint(true)).body().html();
     }
 
-    public static String markdownForLinks(String project, Item item, Properties links, Properties issues) {
+    public static String markdownForLinks(String project, Item item, Properties links, Properties issues, Properties projects) {
         if (item.issuelinkTypes == null || item.issuelinkTypes.size() == 0) {
             return null;
         }
         StringBuilder sb = new StringBuilder();
-        sb.append("\n---\n\n**Referenced issues**\n");
+        sb.append("\n---\n**Referenced issues**\n");
 
         for (Item.IssuelinkType ilt : item.issuelinkTypes) {
             String k1 = String.format("lt.%d", ilt.id);
@@ -164,15 +164,13 @@ public class HtmlToMd {
                 for (Item.LinkKey link : ilt.outwardlinks.links) {
                     String target = link.issueKey.value;
                     if (!target.startsWith(project)) {
-                        // link to another project
-                        if (target.startsWith("PAX")) {
-                            if (issues.getProperty(target + ".summary") == null) {
-                                LOG.warn("Unknown summary for " + target + " linked from " + item.key.value);
-                            } else {
-                                sb.append(String.format("* [%s](https://ops4j1.jira.com/browse/%s) - %s%n", target, target, issues.getProperty(target + ".summary")));
-                            }
+                        // link to another project - may already be imported from Jira to Github
+                        if (issues.getProperty(target + ".summary") == null) {
+                            LOG.warn("Unknown summary for " + target + " linked from " + item.key.value);
                         } else {
-                            throw new IllegalArgumentException("Unknown target " + target);
+                            String jiraProject = target.split("-")[0];
+                            String ghProject = projects.getProperty(jiraProject);
+                            sb.append(String.format("* %s#%s - %s%n", ghProject, issues.getProperty(target), issues.getProperty(target + ".summary")));
                         }
                     } else {
                         // link to the same project
@@ -186,14 +184,12 @@ public class HtmlToMd {
                     String target = link.issueKey.value;
                     if (!target.startsWith(project)) {
                         // link to another project
-                        if (target.startsWith("PAX")) {
-                            if (issues.getProperty(target + ".summary") == null) {
-                                LOG.warn("Unknown summary for " + target + " linked from " + item.key.value);
-                            } else {
-                                sb.append(String.format("* [%s](https://ops4j1.jira.com/browse/%s) - %s%n", target, target, issues.getProperty(target + ".summary")));
-                            }
+                        if (issues.getProperty(target + ".summary") == null) {
+                            LOG.warn("Unknown summary for " + target + " linked from " + item.key.value);
                         } else {
-                            throw new IllegalArgumentException("Unknown target " + target);
+                            String jiraProject = target.split("-")[0];
+                            String ghProject = projects.getProperty(jiraProject);
+                            sb.append(String.format("* %s#%s - %s%n", ghProject, issues.getProperty(target), issues.getProperty(target + ".summary")));
                         }
                     } else {
                         // link to the same project

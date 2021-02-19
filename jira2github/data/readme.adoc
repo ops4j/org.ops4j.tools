@@ -56,4 +56,6 @@ Finally Jira issues may be copied to Github using `org.ops4j.tools.jira2github.c
 
 `org.ops4j.tools.jira2github.client.JiraCommentCreator` uses `etc/issues.properties` to add _last comments_ to relevant Jira issues.
 
-And really finally, `org.ops4j.tools.jira2github.client.GithubIssueLinker` is using the Jira-exported XML file again, together with `etc/issues.properties` to update body of Github issues and set issue references.
+`org.ops4j.tools.jira2github.ParseTest.printMarkdownForReferences()` can be used to check if there are links related to projects which were not imported yet.
+
+And really finally, `org.ops4j.tools.jira2github.client.GithubIssueLinker` is using the Jira-exported XML file again, together with `etc/issues.properties`, `etc/links.properties` and `etc/projects.properties` to update body of Github issues and set issue references.
