@@ -129,16 +129,21 @@ public class GithubIssueImporter {
         }
 
         System.out.println();
+        final int[] counts = new int[] { 0, 0 };
         result.forEach((key, code) -> {
             if (code < 400) {
                 LOG.info("{}: HTTP {}", key, code);
+                counts[0]++;
             }
         });
         result.forEach((key, code) -> {
             if (code >= 400) {
                 LOG.warn("{}: HTTP {}", key, code);
+                counts[1]++;
             }
         });
+
+        LOG.info("Imported {} issues, failed importing {} issues", counts[0], counts[1]);
     }
 
     private static void send(Item item, CloseableHttpClient client, String org, String repo, String token, Map<String, Integer> result) throws Exception {
