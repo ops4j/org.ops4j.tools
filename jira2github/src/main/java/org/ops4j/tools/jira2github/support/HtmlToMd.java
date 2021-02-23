@@ -59,6 +59,27 @@ public class HtmlToMd {
                         sb.append(p(child).trim());
                         pcount++;
                         break;
+                    case "h3":
+                        if (pcount > 0) {
+                            sb.append("\n\n");
+                        }
+                        sb.append("### ").append(p(child).trim());
+                        pcount++;
+                        break;
+                    case "h4":
+                        if (pcount > 0) {
+                            sb.append("\n\n");
+                        }
+                        sb.append("#### ").append(p(child).trim());
+                        pcount++;
+                        break;
+                    case "h5":
+                        if (pcount > 0) {
+                            sb.append("\n\n");
+                        }
+                        sb.append("##### ").append(p(child).trim());
+                        pcount++;
+                        break;
                     case "div":
                         if (pcount > 0) {
                             sb.append("\n\n");
@@ -110,6 +131,20 @@ public class HtmlToMd {
                             sb.append("\n\n");
                         }
                         sb.append("---");
+                        pcount++;
+                        break;
+                    case "a":
+                        if (pcount > 0) {
+                            sb.append("\n\n");
+                        }
+                        sb.append(String.format("[%s](%s)", child.text(), child.attr("href")));
+                        pcount++;
+                        break;
+                    case "span":
+                        if (pcount > 0) {
+                            sb.append("\n\n");
+                        }
+                        sb.append(q(child.text()));
                         pcount++;
                         break;
                     default:
@@ -298,6 +333,7 @@ public class HtmlToMd {
     private static void processContent(Element el, StringBuilder sb) {
         switch (el.nodeName().toLowerCase()) {
             case "tt":
+            case "ins":
                 sb.append("`").append(qtt(el.text())).append("`");
                 break;
             case "b":
@@ -358,6 +394,9 @@ public class HtmlToMd {
             case "del":
                 sb.append("~~").append(q(el.text())).append("~~");
                 break;
+            case "cite":
+                sb.append("> ").append(q(el.text())).append("\n");
+                break;
             case "p":
                 sb.append(p(el).trim()).append("\n");
                 break;
@@ -380,6 +419,8 @@ public class HtmlToMd {
                             sb.append(":grinning:");
                         } else if (src.endsWith("tongue.png")) {
                             sb.append(":stuck_out_tongue:");
+                        } else if (src.endsWith("star_yellow.png")) {
+                            sb.append(":star:");
                         } else {
                             throw new IllegalStateException("Unknown emoji " + src);
                         }
@@ -498,6 +539,9 @@ public class HtmlToMd {
                 }
                 sb.append(c);
             }
+        }
+        if (inMention) {
+            sb.append("`");
         }
         return sb.toString();
     }

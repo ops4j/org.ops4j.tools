@@ -50,6 +50,8 @@ Relevant `versions.properties`, `types.properties`, `components.properties`, `re
 ** `org.ops4j.tools.jira2github.client.JiraVersionExporter` copies the versions from Jira to Github
 ** `org.ops4j.tools.jira2github.client.GithubMilestoneExporter` then prints a property-file formatted mapping of Jira versions to Github milestone numbers - this mapping has to be added to `etc/versions.properties`
 
+`org.ops4j.tools.jira2github.ParseTest.parseMarkdownAndOriginalMarkup()` creates (in `target/`) a 2-column HTML file where we can compare the original Jira HTML with the Markdown translated to HTML using `org.commonmark.renderer.html.HtmlRenderer`.
+
 Finally Jira issues may be copied to Github using `org.ops4j.tools.jira2github.client.GithubIssueImporter` - this is the most important part.
 
 `org.ops4j.tools.jira2github.client.GithubIssueExporter` gets back the Github issues and prints property-file formatted mapping of Jira issue keys to Github issue ids, which has to be added to `etc/issues.properties`.

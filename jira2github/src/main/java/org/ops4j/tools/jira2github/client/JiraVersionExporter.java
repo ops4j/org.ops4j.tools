@@ -67,6 +67,10 @@ public class JiraVersionExporter {
         try (FileReader fr = new FileReader("etc/application.properties")) {
             props.load(fr);
         }
+        Properties versions = new Properties();
+        try (FileReader fr = new FileReader("etc/versions.properties")) {
+            versions.load(fr);
+        }
 
         String jproject = props.getProperty("jira.project");
         String ghproject = props.getProperty("github.repository");
@@ -101,13 +105,13 @@ public class JiraVersionExporter {
             TreeNode tree = mapper.createParser(resultWrapper.content).readValueAsTree();
             mapper.createGenerator(System.out).setPrettyPrinter(new DefaultPrettyPrinter()).writeTree(tree);
 
-            createVersion(props, ghproject, tree);
+            createVersion(props, versions, ghproject, tree);
         } catch (IOException e) {
             LOG.error(e.getMessage(), e);
         }
     }
 
-    private static void createVersion(Properties props, String ghproject, TreeNode tree) throws IOException {
+    private static void createVersion(Properties props, Properties versions, String ghproject, TreeNode tree) throws IOException {
         GitHub github = new GitHubBuilder().withOAuthToken(props.getProperty("github.token"),
                 props.getProperty("github.organization")).build();
         GHRepository repo = github.getRepository(props.getProperty("github.organization") + "/" + ghproject);
@@ -116,13 +120,19 @@ public class JiraVersionExporter {
             try {
                 String desc = el.get("description") == null ? null : el.get("description").asText();
                 Date d = el.get("releaseDate") == null ? null : DateAdapter.YMD_FORMAT.parse(el.get("releaseDate").asText());
-                LOG.info("Creating milestone {} (due date: {})", el.get("name").asText(), d);
-                GHMilestone ms = repo.createMilestone(el.get("name").asText(), desc);
-                if (d != null) {
-                    ms.setDueOn(d);
-                }
-                if (el.get("released") != null && el.get("released").asBoolean()) {
-                    ms.close();
+                String jiraVersion = el.get("name").asText();
+                if (versions.containsKey(props.getProperty("jira.project") + "." + jiraVersion)) {
+                    // it's already created
+                    LOG.info("milestone {} (due date: {}) is already created: {}", jiraVersion, d, versions.get(props.getProperty("jira.project") + "." + jiraVersion));
+                } else {
+                    LOG.info("Creating milestone {} (due date: {})", jiraVersion, d);
+                    GHMilestone ms = repo.createMilestone(jiraVersion, desc);
+                    if (d != null) {
+                        ms.setDueOn(d);
+                    }
+                    if (el.get("released") != null && el.get("released").asBoolean()) {
+                        ms.close();
+                    }
                 }
             } catch (Exception e) {
                 LOG.error(e.getMessage(), e);

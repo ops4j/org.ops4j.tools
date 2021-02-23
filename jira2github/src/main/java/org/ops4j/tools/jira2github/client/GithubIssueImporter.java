@@ -132,7 +132,10 @@ public class GithubIssueImporter {
         result.forEach((key, code) -> {
             if (code < 400) {
                 LOG.info("{}: HTTP {}", key, code);
-            } else {
+            }
+        });
+        result.forEach((key, code) -> {
+            if (code >= 400) {
                 LOG.warn("{}: HTTP {}", key, code);
             }
         });
@@ -159,17 +162,19 @@ public class GithubIssueImporter {
             // if one there's no problem, of more, we have to select the latest and mark the issue as backported
                 entity.append(",\n");
             if (item.fixVersions.size() == 1) {
-                String v = versions.getProperty(JIRA_PROJECT + "." + item.fixVersions.get(0));
+                String version = item.fixVersions.get(0).trim();
+                String v = versions.getProperty(JIRA_PROJECT + "." + version);
                 if (v == null) {
-                    throw new IllegalStateException("Can't find version number for \"" + item.fixVersions.get(0) + "\"");
+                    throw new IllegalStateException("Can't find version number for \"" + version + "\"");
                 }
                 entity.append("    \"milestone\": ").append(v);
             } else {
                 List<String> vs = new ArrayList<>(item.fixVersions);
                 vs.sort(new VersionComparator());
-                String v = versions.getProperty(JIRA_PROJECT + "." + vs.get(vs.size() - 1));
+                String version = vs.get(vs.size() - 1).trim();
+                String v = versions.getProperty(JIRA_PROJECT + "." + version);
                 if (v == null) {
-                    throw new IllegalStateException("Can't find version number for \"" + item.fixVersions.get(vs.size() - 1) + "\"");
+                    throw new IllegalStateException("Can't find version number for \"" + version + "\"");
                 }
                 entity.append("    \"milestone\": ").append(v);
                 item.labels.add("status: backported");
@@ -238,6 +243,7 @@ public class GithubIssueImporter {
         LOG.info(entity.toString());
 
         createIssue(client, pb, item.key.value, result);
+        Thread.sleep(200);
     }
 
     private static void createIssue(CloseableHttpClient client, ClassicRequestBuilder pb, String issueId, Map<String, Integer> result) throws Exception {

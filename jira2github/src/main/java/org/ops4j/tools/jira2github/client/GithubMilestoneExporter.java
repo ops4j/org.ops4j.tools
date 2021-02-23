@@ -19,7 +19,9 @@
 package org.ops4j.tools.jira2github.client;
 
 import java.io.FileReader;
+import java.util.Map;
 import java.util.Properties;
+import java.util.TreeMap;
 
 import org.kohsuke.github.GHIssueState;
 import org.kohsuke.github.GHMilestone;
@@ -51,9 +53,13 @@ public class GithubMilestoneExporter {
         GHRepository repo = github.getRepository(props.getProperty("github.organization") + "/" + props.getProperty("github.repository"));
 
         PagedIterable<GHMilestone> ms = repo.listMilestones(GHIssueState.ALL);
+        Map<String, Integer> versions = new TreeMap<>(new GithubIssueImporter.VersionComparator());
         for (GHMilestone m : ms) {
-            System.out.printf("%s.%s = %d%n", project, m.getTitle(), m.getNumber());
+            versions.put(m.getTitle(), m.getNumber());
         }
+        versions.forEach((v, n) -> {
+            System.out.printf("%s.%s = %d%n", project, v, n);
+        });
     }
 
 }

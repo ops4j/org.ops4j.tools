@@ -22,6 +22,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
@@ -435,7 +437,7 @@ public class ParseTest {
         }
         System.out.println("Detected users:");
         newUsers.forEach((id, user) -> {
-            System.out.printf("%s = %s%n", id, user);
+            System.out.printf("%s = %s%n", id.replace("557058:", "557058\\:"), user);
         });
         System.out.println("Detected resolutions:");
         newResolutions.forEach((id, r) -> {
@@ -457,7 +459,7 @@ public class ParseTest {
             components.load(fr);
         }
         Map<String, Set<String>> projectsComponents = new HashMap<>();
-        Set<String> unknownComponents = new HashSet<>();
+        List<String> unknownComponents = new LinkedList<>();
         for (Object o : components.keySet()) {
             String key = (String) o;
             if (key.endsWith(".label")) {
@@ -490,7 +492,9 @@ public class ParseTest {
                     if (issue.components != null) {
                         for (String c : issue.components) {
                             if (!comps.contains(c)) {
-                                unknownComponents.add(String.format("%s.%d = %s", prefix, counter++, c));
+                                unknownComponents.add(String.format("%s.%d = %s", prefix, counter, c));
+                                unknownComponents.add(String.format("%s.%d.label = component: %s", prefix, counter, c.toLowerCase()));
+                                counter++;
                                 comps.add(c);
                             }
                         }
