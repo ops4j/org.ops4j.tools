@@ -59,6 +59,13 @@ public class HtmlToMd {
                         sb.append(p(child).trim());
                         pcount++;
                         break;
+                    case "h2":
+                        if (pcount > 0) {
+                            sb.append("\n\n");
+                        }
+                        sb.append("## ").append(p(child).trim());
+                        pcount++;
+                        break;
                     case "h3":
                         if (pcount > 0) {
                             sb.append("\n\n");
@@ -92,8 +99,8 @@ public class HtmlToMd {
                             sb.append("\n\n");
                         }
                         StringBuilder sb2 = new StringBuilder();
-                        for (Element p : child.getElementsByTag("p")) {
-                            sb2.append(p(p).trim()).append("\n\n");
+                        for (Element p : child.children()) {
+                            processContent(p, sb2);
                         }
                         try (BufferedReader r = new BufferedReader(new StringReader(sb2.toString().trim()))) {
                             String line = null;
@@ -219,7 +226,10 @@ public class HtmlToMd {
                     String target = link.issueKey.value;
                     if (!target.startsWith(project)) {
                         // link to another project
-                        if (issues.getProperty(target + ".summary") == null) {
+                        if (target.startsWith("PAXCURSOR")) {
+                            // special case - there's no pax.cursor project at GitHub
+                            sb.append(String.format("* [%s](https://ops4j1.jira.com/browse/%s) - %s%n", target, target, issues.getProperty(target)));
+                        } else if (issues.getProperty(target + ".summary") == null) {
                             LOG.warn("Unknown summary for " + target + " linked from " + item.key.value);
                         } else {
                             String jiraProject = target.split("-")[0];
@@ -377,7 +387,11 @@ public class HtmlToMd {
                 break;
             }
             case "font":
-                processContent(el.child(0), sb);
+                if (el.childrenSize() > 0) {
+                    processContent(el.child(0), sb);
+                } else {
+                    sb.append(q(el.text()));
+                }
                 break;
             case "a":
                 sb.append(String.format("[%s](%s)", el.text(), el.attr("href")));
@@ -421,6 +435,10 @@ public class HtmlToMd {
                             sb.append(":stuck_out_tongue:");
                         } else if (src.endsWith("star_yellow.png")) {
                             sb.append(":star:");
+                        } else if (src.endsWith("check.png")) {
+                            sb.append(":heavy_check_mark:");
+                        } else if (src.endsWith("add.png")) {
+                            sb.append(":heavy_plus_sign:");
                         } else {
                             throw new IllegalStateException("Unknown emoji " + src);
                         }

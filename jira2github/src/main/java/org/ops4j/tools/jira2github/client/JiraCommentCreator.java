@@ -169,18 +169,21 @@ public class JiraCommentCreator {
         }
 
         System.out.println();
-
+        final int[] counts = new int[] { 0, 0 };
         result.forEach((key, code) -> {
             if (code < 400) {
+                counts[0]++;
                 LOG.info("{}: HTTP {}", key, code);
             }
         });
-
         result.forEach((key, code) -> {
             if (code >= 400) {
                 LOG.warn("{}: HTTP {}", key, code);
+                counts[1]++;
             }
         });
+
+        LOG.info("Commented {} issues, failed commenting {} issues", counts[0], counts[1]);
     }
 
 }
