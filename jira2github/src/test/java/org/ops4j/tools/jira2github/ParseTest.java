@@ -261,10 +261,10 @@ public class ParseTest {
         JAXBContext jaxb = JAXBContext.newInstance(Rss.class.getPackage().getName());
         Unmarshaller u = jaxb.createUnmarshaller();
 
-        String project = "PAXLOGGING";
+        String project = "PAXWEB";
 
-        try (FileReader reader = new FileReader("data/" + project + "-20210205.xml");
-                FileWriter writer = new FileWriter("target/" + project + "-20210205.md")) {
+        try (FileReader reader = new FileReader("data/" + project + "-20210224-1.xml");
+                FileWriter writer = new FileWriter("target/" + project + "-20210224-1.md")) {
             Rss rss = u.unmarshal(new StreamSource(reader), Rss.class).getValue();
             rss.sort();
 

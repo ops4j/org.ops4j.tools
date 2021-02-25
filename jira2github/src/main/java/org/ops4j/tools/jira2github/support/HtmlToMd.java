@@ -126,11 +126,7 @@ public class HtmlToMd {
                         pcount++;
                         break;
                     case "br":
-                        if (pcount > 0) {
-                            sb.append("\n\n<br />");
-                        } else {
-                            sb.append("<br />");
-                        }
+                        sb.append("<br />");
                         pcount++;
                         break;
                     case "hr":
@@ -141,9 +137,9 @@ public class HtmlToMd {
                         pcount++;
                         break;
                     case "a":
-                        if (pcount > 0) {
-                            sb.append("\n\n");
-                        }
+//                        if (pcount > 0) {
+//                            sb.append("\n\n");
+//                        }
                         sb.append(String.format("[%s](%s)", child.text(), child.attr("href")));
                         pcount++;
                         break;
@@ -154,14 +150,26 @@ public class HtmlToMd {
                         sb.append(q(child.text()));
                         pcount++;
                         break;
+                    case "img": {
+                        if ("emoticon".equals(child.attr("class"))) {
+                            // https://github.com/ikatyang/emoji-cheat-sheet/blob/master/README.md
+                            String src = child.attr("src");
+                            if (src != null) {
+                                if (src.endsWith("tongue.png")) {
+                                    sb.append(":stuck_out_tongue:");
+                                }
+                            }
+                        }
+                        break;
+                    }
                     default:
                         throw new IllegalStateException("Unhandled element " + child);
                 }
             } else if (n instanceof TextNode) {
                 String text = ((TextNode) n).text();
-                if (pcount > 0) {
-                    sb.append("\n\n");
-                }
+//                if (pcount > 0) {
+//                    sb.append("\n\n");
+//                }
                 if (text.startsWith("> ")) {
                     sb.append("\\> ");
                     text = text.substring(2);
@@ -224,9 +232,9 @@ public class HtmlToMd {
                 sb.append("\n**").append(links.getProperty(ki)).append(":**\n");
                 for (Item.LinkKey link : ilt.inwardlinks.links) {
                     String target = link.issueKey.value;
-                    if (!target.startsWith(project)) {
+                    if (!target.startsWith(project + "-")) {
                         // link to another project
-                        if (target.startsWith("PAXCURSOR")) {
+                        if (target.startsWith("PAXCURSOR") || target.startsWith("PAXWEBEX")) {
                             // special case - there's no pax.cursor project at GitHub
                             sb.append(String.format("* [%s](https://ops4j1.jira.com/browse/%s) - %s%n", target, target, issues.getProperty(target)));
                         } else if (issues.getProperty(target + ".summary") == null) {
@@ -439,6 +447,8 @@ public class HtmlToMd {
                             sb.append(":heavy_check_mark:");
                         } else if (src.endsWith("add.png")) {
                             sb.append(":heavy_plus_sign:");
+                        } else if (src.endsWith("thumbs_up.png")) {
+                            sb.append(":thumbsup:");
                         } else {
                             throw new IllegalStateException("Unknown emoji " + src);
                         }

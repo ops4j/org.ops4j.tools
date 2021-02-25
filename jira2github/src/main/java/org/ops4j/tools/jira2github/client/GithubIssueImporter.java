@@ -51,6 +51,9 @@ public class GithubIssueImporter {
     // see https://spring.io/blog/2019/01/15/spring-framework-s-migration-from-jira-to-github-issues
     // see https://gist.github.com/jonmagic/5282384165e0f86ef105
 
+    // checking issue status:
+    // curl -v -H 'Accept: application/vnd.github.golden-comet-preview+json' -H 'Authorization: token xxx' curl https://api.github.com/repos/ops4j/org.ops4j.pax.exam2/import/issues/3845719
+
     public static final Logger LOG = LoggerFactory.getLogger(GithubIssueImporter.class);
 
     private static final Properties users = new Properties();
